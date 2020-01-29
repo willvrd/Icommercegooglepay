@@ -23,6 +23,18 @@
     
     {!! Form::normalInput('description', trans('icommercegooglepay::googlepayconfigs.table.description'), $errors,$configuration,$options) !!}
 
+    {!! Form::normalInput('merchantId', '*'.trans('icommercegooglepay::googlepayconfigs.table.merchantId'), $errors,$configuration,$options) !!}
+
+    {!! Form::normalInput('merchantName', '*'.trans('icommercegooglepay::googlepayconfigs.table.merchantName'), $errors,$configuration,$options) !!}
+
+    <div class="form-group">
+        <label for="mode">*Mode</label>
+        <select class="form-control" id="mode" name="mode" required>
+        	<option value="0" @if(!empty($configuration) && $configuration->mode==0) selected @endif>TEST</option>
+        	<option value="1" @if(!empty($configuration) && $configuration->mode==1) selected @endif>PRODUCTION</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <div>
             <label class="checkbox-inline">

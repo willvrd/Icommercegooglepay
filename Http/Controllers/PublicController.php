@@ -53,6 +53,8 @@ class PublicController extends BasePublicController
        
         if ($request->session()->exists('orderID')) {
 
+          dd("Google Pay");
+          
             try{
 
                 $email_from = $this->setting->get('icommerce::from-email');

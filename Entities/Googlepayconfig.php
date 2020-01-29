@@ -5,19 +5,27 @@ namespace Modules\Icommercegooglepay\Entities;
 class Googlepayconfig
 {
     private $description;
+    private $merchantId;
+    private $mode;
     private $image;
     private $status;
     public function __construct()
     {
-        $this->description = setting('Icommercegooglepay::description');
-        $this->image = setting('Icommercegooglepay::image');
-        $this->status = setting('Icommercegooglepay::status');
+        $this->description = setting('icommerceGooglepay::description');
+        $this->merchantId = setting('icommerceGooglepay::merchantId');
+        $this->merchantName = setting('icommerceGooglepay::merchantName');
+        $this->mode = setting('icommerceGooglepay::mode');
+        $this->image = setting('icommerceGooglepay::image');
+        $this->status = setting('icommerceGooglepay::status');
     }
 
     public function getData()
     {
         return (object) [
             'description' => $this->description,
+            'merchantId' => $this->merchantId,
+            'merchantName' => $this->merchantName,
+            'mode' => $this->mode,
             'image' => url($this->image),
             'status' => $this->status
         ];

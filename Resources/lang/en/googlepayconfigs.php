@@ -13,13 +13,16 @@ return [
     ],
     'button' => [
         'create googlepayconfig' => 'Create a googlepayconfig',
-        'save configuration' => 'Save configuration to Check or Money',
+        'save configuration' => 'Save configuration to Google Pay',
     ],
     'table' => [
         'activate' => 'Activate',
         'description' => 'Description',
         'image' => 'Image',
         'status' => 'Status',
+        'merchantId' => 'Merchant ID',
+        'merchantName' => 'Merchant Name',
+        'mode' => 'Allow use of Test Credit Cards',
     ],
     'form' => [
     ],

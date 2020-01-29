@@ -13,7 +13,7 @@ return [
     ],
     'button' => [
         'create googlepayconfig' => 'Create a googlepayconfig',
-        'save configuration' => 'Save configuration to Check or Money',
+        'save configuration' => 'Save configuration to Google Pay',
     ],
     'table' => [
         'activate' => 'Activar',
