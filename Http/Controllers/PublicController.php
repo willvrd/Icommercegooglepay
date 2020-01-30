@@ -50,10 +50,24 @@ class PublicController extends BasePublicController
     
     public function index(Requests $request)
     {       
-       
+
+      
+        //$orderID = session('orderID');
+        $orderID = 1; // Testing
+        $order = $this->order->find($orderID);
+
+        $config = new Googlepayconfig();
+        $config = $config->getData();
+
+        $tpl = 'icommercegooglepay::frontend.index';
+
+
+        return view($tpl, compact('config','order'));
+
+      /*
         if ($request->session()->exists('orderID')) {
 
-          dd("Google Pay");
+          
           
             try{
 
@@ -106,7 +120,7 @@ class PublicController extends BasePublicController
 
 
         }
-  
+        
         $user = $this->auth->user();
         if (isset($user) && !empty($user))
           if (!empty($order))
@@ -120,6 +134,7 @@ class PublicController extends BasePublicController
           else
             return redirect()->route('homepage')
               ->withSuccess(trans('icommerce::common.order_success'));
+      */
     }
 
 }
