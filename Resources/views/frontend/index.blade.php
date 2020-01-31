@@ -36,20 +36,20 @@
 
     /**
     * Card networks supported by your site and your gateway
-    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters|CardParameters
+    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters
     */
-    const allowedCardNetworks = ["AMEX", "DISCOVER", "MASTERCARD", "VISA"];
-    
+    const allowedCardNetworks = {!!json_encode($allowedCards)!!};
+   
     /**
     * Card authentication methods supported by your site and your gateway
-    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters|CardParameters
+    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters
     */
-    const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+    const allowedCardAuthMethods = {!!json_encode($allowedCardsAuth)!!};
 
     /**
     * Describe your site's support for the CARD payment method and its required
     * fields
-    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters|CardParameters
+    * https://developers.google.com/pay/api/web/reference/request-objects#CardParameters
     */
     const baseCardPaymentMethod = {
       type: 'CARD',
@@ -61,7 +61,7 @@
 
     /**
     * Define the version of the Google Pay API 
-    * https://developers.google.com/pay/api/web/reference/request-objects#PaymentDataRequest|apiVersion in PaymentDataRequest
+    * https://developers.google.com/pay/api/web/reference/request-objects#PaymentDataRequest
     */
     const baseRequest = {
       apiVersion: 2,
@@ -76,7 +76,7 @@
     * of being charged by a supported gateway after payer authorization
     *
     * check with your gateway on the parameters to pass
-    * https://developers.google.com/pay/api/web/reference/request-objects#gateway|PaymentMethodTokenizationSpecification
+    * https://developers.google.com/pay/api/web/reference/request-objects#gateway
     */
     const tokenizationSpecification = {
       type: 'PAYMENT_GATEWAY',
@@ -205,7 +205,7 @@
           // show error in developer console for debugging
           // Log error: { statusCode: CANCELED || DEVELOPER_ERROR }
           console.error("ERROR - PAYMENT BUTTON CLICKED: ",err);
-          sendResponse(err,'btn-clicked')
+          /*sendResponse(err,'btn-clicked') TESTIIINGGGGGGGGGGGGGGGGGGGGGGGGGGGGG*/
         });
 
     }

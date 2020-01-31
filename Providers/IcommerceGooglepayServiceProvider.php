@@ -39,6 +39,7 @@ class IcommerceGooglepayServiceProvider extends ServiceProvider
     {
         $this->publishConfig('Icommercegooglepay', 'permissions');
         $this->publishConfig('Icommercegooglepay', 'settings');
+        $this->publishConfig('Icommercegooglepay', 'config');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
