@@ -27,6 +27,11 @@
 
     {!! Form::normalInput('merchantName', '*'.trans('icommercegooglepay::googlepayconfigs.table.merchantName'), $errors,$configuration,$options) !!}
 
+    {!! Form::normalInput('gateway', '* Gateway', $errors,$configuration,$options) !!}
+
+    {!! Form::normalInput('gatewayMerchantId', '* Gateway Merchant Id', $errors,$configuration,$options) !!}
+
+
     <div class="form-group">
         <label for="mode">*Mode</label>
         <select class="form-control" id="mode" name="mode" required>

@@ -81,8 +81,8 @@
     const tokenizationSpecification = {
       type: 'PAYMENT_GATEWAY',
       parameters: {
-        'gateway': 'example',
-        'gatewayMerchantId': 'exampleGatewayMerchantId'
+        'gateway': '{{$config->gateway}}',
+        'gatewayMerchantId': '{{$config->gatewayMerchantId}}'
       }
     };
 
