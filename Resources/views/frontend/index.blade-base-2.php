@@ -31,15 +31,16 @@
 @section('scripts')
 @parent
 
+
 <script type="text/javascript">
 
-/**
+   /**
  * Define the version of the Google Pay API referenced when creating your
  * configuration
  *
  * @see {@link https://developers.google.com/pay/api/web/reference/request-objects#PaymentDataRequest|apiVersion in PaymentDataRequest}
  */
- const baseRequest = {
+const baseRequest = {
   apiVersion: 2,
   apiVersionMinor: 0
 };
@@ -50,7 +51,7 @@
  * @see {@link https://developers.google.com/pay/api/web/reference/request-objects#CardParameters|CardParameters}
  * @todo confirm card networks supported by your site and gateway
  */
-const allowedCardNetworks = {!!json_encode($allowedCards)!!};
+const allowedCardNetworks = ["AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA"];
 
 /**
  * Card authentication methods supported by your site and your gateway
@@ -59,7 +60,7 @@ const allowedCardNetworks = {!!json_encode($allowedCards)!!};
  * @todo confirm your processor supports Android device tokens for your
  * supported card networks
  */
-const allowedCardAuthMethods = {!!json_encode($allowedCardsAuth)!!};
+const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
 
 /**
  * Identify your gateway and your site's gateway merchant identifier
@@ -70,25 +71,13 @@ const allowedCardAuthMethods = {!!json_encode($allowedCardsAuth)!!};
  * @todo check with your gateway on the parameters to pass
  * @see {@link https://developers.google.com/pay/api/web/reference/request-objects#gateway|PaymentMethodTokenizationSpecification}
  */
-/*
 const tokenizationSpecification = {
   type: 'PAYMENT_GATEWAY',
   parameters: {
-    'gateway': '{{$config->gateway}}',
-    'gatewayMerchantId': '{{$config->gatewayMerchantId}}'
+    'gateway': 'example',
+    'gatewayMerchantId': 'exampleGatewayMerchantId'
   }
 };
-*/
-
-const tokenizationSpecification = {
-  type: 'DIRECT',
-  parameters: {
-    'protocolVersion': 'ECv2',
-    'publicKey': '{{$config->publicKey}}'
-  }
-};
-
-
 
 /**
  * Describe your site's support for the CARD payment method and its required
@@ -158,8 +147,8 @@ function getGooglePaymentDataRequest() {
   paymentDataRequest.merchantInfo = {
     // @todo a merchant ID is available for a production environment after approval by Google
     // See {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
-    merchantId: '{{$config->merchantId}}',
-    merchantName: '{{$config->merchantName}}'
+    // merchantId: '01234567890123456789',
+    merchantName: 'Example Merchant'
   };
 
   paymentDataRequest.callbackIntents = ["PAYMENT_AUTHORIZATION"];
@@ -174,19 +163,9 @@ function getGooglePaymentDataRequest() {
  * @returns {google.payments.api.PaymentsClient} Google Pay API client
  */
 function getGooglePaymentsClient() {
-  
   if ( paymentsClient === null ) {
-
-      @if($config->mode==0)
-        let enviroment = 'TEST'
-      @else
-        let enviroment = 'PRODUCTION'
-      @endif
-
-      console.warn("***** ENVIROMENT: "+enviroment)
-
     paymentsClient = new google.payments.api.PaymentsClient({
-        environment: enviroment,
+        environment: 'TEST',
       paymentDataCallbacks: {
         onPaymentAuthorized: onPaymentAuthorized
       }
@@ -206,10 +185,9 @@ function getGooglePaymentsClient() {
  */
 function onPaymentAuthorized(paymentData) {
   return new Promise(function(resolve, reject){
-
-    console.warn("***** On Payment Authorized")
     // handle the response
-    processPayment(paymentData).then(function() {
+    processPayment(paymentData)
+      .then(function() {
         resolve({transactionState: 'SUCCESS'});
       })
       .catch(function() {
@@ -232,18 +210,17 @@ function onPaymentAuthorized(paymentData) {
  * ability to pay.
  */
 function onGooglePayLoaded() {
-
-  console.warn("***** GOOGLE PAY: LOADED")
-
   const paymentsClient = getGooglePaymentsClient();
-  paymentsClient.isReadyToPay(getGoogleIsReadyToPayRequest()).then(function(response) {
+  paymentsClient.isReadyToPay(getGoogleIsReadyToPayRequest())
+    .then(function(response) {
       if (response.result) {
         addGooglePayButton();
       }
-  }).catch(function(err) {
+    })
+    .catch(function(err) {
       // show error in developer console for debugging
-      console.error("ERROR - onGooglePayLoaded: determining readiness to use Google Pay: ", err);
-  });
+      console.error(err);
+    });
 }
 
 /**
@@ -254,10 +231,9 @@ function onGooglePayLoaded() {
  */
 function addGooglePayButton() {
   const paymentsClient = getGooglePaymentsClient();
-  const button = paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
-
+  const button =
+      paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
   document.getElementById('btn-google').appendChild(button);
-
 }
 
 /**
@@ -268,11 +244,22 @@ function addGooglePayButton() {
  */
 function getGoogleTransactionInfo() {
   return {
-    countryCode: '{{$order->payment_country}}',
-    currencyCode: "{{$order->currency_code}}",
+        displayItems: [
+        {
+          label: "Subtotal",
+          type: "SUBTOTAL",
+          price: "1.00",
+        },
+      {
+          label: "Tax",
+          type: "TAX",
+          price: "1.00",
+        }
+    ],
+    countryCode: 'CO',
+    currencyCode: "COP",
     totalPriceStatus: "FINAL",
-    //totalPrice: "{{$order->total}}",
-    totalPrice: "1",
+    totalPrice: "2",
     totalPriceLabel: "Total"
   };
 }
@@ -285,19 +272,8 @@ function onGooglePaymentButtonClicked() {
   const paymentDataRequest = getGooglePaymentDataRequest();
   paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
 
-  console.warn("***** PAYMENT REQUEST: ", paymentDataRequest)
-
   const paymentsClient = getGooglePaymentsClient();
-
-  /*paymentsClient.loadPaymentData(paymentDataRequest);*/
-
-  paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData){
-  }).catch(function(err){  
-    /*Log error: { statusCode: CANCELED || DEVELOPER_ERROR }*/
-    console.error("***** ERROR - PAYMENT BUTTON CLICKED: ",err);
-  });
- 
-
+  paymentsClient.loadPaymentData(paymentDataRequest);
 }
 
 let attempts = 0;
@@ -313,82 +289,15 @@ function processPayment(paymentData) {
       // @todo pass payment token to your gateway to process payment
       paymentToken = paymentData.paymentMethodData.tokenizationData.token;
 
-      console.warn("***** Recibido Payment Token:")
-      console.warn(paymentToken)
-      decryptMsj(paymentToken)
-      
-      resolve({}); 
-      
-    }, 3000);
+			if (attempts++ % 2 == 0) {
+	      reject(new Error('Every other attempt fails, next one should succeed'));      
+      } else {
+	      resolve({});      
+      }
+    }, 500);
   });
 }
 
-/**
-* For environment tests, replace INSTANCE_PRODUCTION with INSTANCE_TEST 
-* and [YOUR MERCHANT ID] with 12345678901234567890.
-*
-*/
-function decryptMsj(paymentToken){
-
-  var myObj = JSON.parse(paymentToken);
-  var myObj2 = JSON.parse(myObj.signedMessage)
-  var encryptedMessage = myObj2.encryptedMessage
-
-  // New
-  var privateKey1 = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgWV4oK8c / MZkCLk4qSCNjW0Zm6H0CBCtSYxkXkC9FBHehRANCAAQPldOnhO2 / oXjdJD1dwlFPiNs6fcdoRgFu3 / Z0iKj24SjTGyLRGAtYWLGXBZcDdPj3T2bJRHRVhE8Bc2AjkT7n"
-
-  // Old
-  var privateKey2 = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgWV4oK8c / MZkCLk4qSCNjW0Zm6H0CBCtSYxkXkC9FBHehRANCAAQPldOnhO2 / oXjdJD1dwlFPiNs6fcdoRgFu3 / Z0iKj24SjTGyLRGAtYWLGXBZcDdPj3T2bJRHRVhE8Bc2AjkT7n"
-
-  console.warn(encryptedMessage)
-  /*
-  String decryptedMessage = new PaymentMethodTokenRecipient.Builder()
-  .fetchSenderVerifyingKeysWith(GooglePaymentsPublicKeysManager.INSTANCE_TEST)
-  .recipientId("merchant:0123456789")
-  .protocolVersion("ECv2")
-  .addRecipientPrivateKey(privateKey1)
-  .build()
-  .unseal(encryptedMessage);
-  */
-  
-  //console.warn(decryptedMessage)
-
-
-}
-
-/**
-  Send Response to process Order
-*/
-    
-function sendResponse(response,type){
-
-    var url = "{{route('icommercegooglepay.api.googlepay.response')}}";
-    var orderId = {{$order->id}}
-
-    $.ajax({
-        url:url,
-        type:"POST",
-        data:{response:response,orderId,type},
-        dataType:"JSON",
-        beforeSend: function(){
-            //console.warn("SEND RESPONSE: BEFORE")
-        },
-        success: function(result){
-
-          if(result.data.redirectRoute){
-            console.warn(result.data.redirectRoute)
-            //window.location = result.data.redirectRoute
-          }
-
-        },
-        error: function(result)
-        {
-          console.log('ERROR - SEND RESPONSE:', result);
-        }
-
-    });
-}
- 
 </script>   
 
 <script async

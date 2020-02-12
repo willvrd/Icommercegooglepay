@@ -27,10 +27,16 @@
 
     {!! Form::normalInput('merchantName', '*'.trans('icommercegooglepay::googlepayconfigs.table.merchantName'), $errors,$configuration,$options) !!}
 
+    {!! Form::normalInput('publicKey', '* Public Key', $errors,$configuration,$options) !!}
+
+    {!! Form::normalInput('privateKey1', '* Private Key 1', $errors,$configuration,$options) !!}
+
+    {!! Form::normalInput('privateKey2', '* Private Key 2', $errors,$configuration,$options) !!}
+
+    {{--
     {!! Form::normalInput('gateway', '* Gateway', $errors,$configuration,$options) !!}
-
     {!! Form::normalInput('gatewayMerchantId', '* Gateway Merchant Id', $errors,$configuration,$options) !!}
-
+    --}}
 
     <div class="form-group">
         <label for="mode">*Mode</label>

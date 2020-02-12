@@ -14,6 +14,9 @@ class Googlepayconfig
         $this->description = setting('icommerceGooglepay::description');
         $this->merchantId = setting('icommerceGooglepay::merchantId');
         $this->merchantName = setting('icommerceGooglepay::merchantName');
+        $this->publicKey = setting('icommerceGooglepay::publicKey');
+        $this->privateKey1 = setting('icommerceGooglepay::privateKey1');
+        $this->privateKey2 = setting('icommerceGooglepay::privateKey2');
         $this->gateway = setting('icommerceGooglepay::gateway');
         $this->gatewayMerchantId = setting('icommerceGooglepay::gatewayMerchantId');
         $this->mode = setting('icommerceGooglepay::mode');
@@ -27,6 +30,9 @@ class Googlepayconfig
             'description' => $this->description,
             'merchantId' => $this->merchantId,
             'merchantName' => $this->merchantName,
+            'publicKey' => $this->publicKey,
+            'privateKey1' => $this->privateKey1,
+            'privateKey2' => $this->privateKey2,
             'gateway' => $this->gateway,
             'gatewayMerchantId' => $this->gatewayMerchantId,
             'mode' => $this->mode,

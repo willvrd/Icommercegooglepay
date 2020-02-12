@@ -70,7 +70,7 @@ const allowedCardAuthMethods = {!!json_encode($allowedCardsAuth)!!};
  * @todo check with your gateway on the parameters to pass
  * @see {@link https://developers.google.com/pay/api/web/reference/request-objects#gateway|PaymentMethodTokenizationSpecification}
  */
-/*
+ /*
 const tokenizationSpecification = {
   type: 'PAYMENT_GATEWAY',
   parameters: {
@@ -84,11 +84,9 @@ const tokenizationSpecification = {
   type: 'DIRECT',
   parameters: {
     'protocolVersion': 'ECv2',
-    'publicKey': '{{$config->publicKey}}'
+    'publicKey': 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEGnJ7Yo1sX9b4kr4Aa5uq58JRQfzD8bIJXw7WXaap\/hVE+PnFxvjx4nVxt79SdRuUVeu++HZD0cGAv4IOznc96w=='
   }
 };
-
-
 
 /**
  * Describe your site's support for the CARD payment method and its required
@@ -183,7 +181,7 @@ function getGooglePaymentsClient() {
         let enviroment = 'PRODUCTION'
       @endif
 
-      console.warn("***** ENVIROMENT: "+enviroment)
+      console.warn("*** ENVIROMENT: "+enviroment)
 
     paymentsClient = new google.payments.api.PaymentsClient({
         environment: enviroment,
@@ -207,7 +205,7 @@ function getGooglePaymentsClient() {
 function onPaymentAuthorized(paymentData) {
   return new Promise(function(resolve, reject){
 
-    console.warn("***** On Payment Authorized")
+    //console.warn("*** On Payment Authorized")
     // handle the response
     processPayment(paymentData).then(function() {
         resolve({transactionState: 'SUCCESS'});
@@ -233,7 +231,7 @@ function onPaymentAuthorized(paymentData) {
  */
 function onGooglePayLoaded() {
 
-  console.warn("***** GOOGLE PAY: LOADED")
+  console.warn("*** INIT GOOGLE PAY")
 
   const paymentsClient = getGooglePaymentsClient();
   paymentsClient.isReadyToPay(getGoogleIsReadyToPayRequest()).then(function(response) {
@@ -285,18 +283,17 @@ function onGooglePaymentButtonClicked() {
   const paymentDataRequest = getGooglePaymentDataRequest();
   paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
 
-  console.warn("***** PAYMENT REQUEST: ", paymentDataRequest)
+  console.warn("*** Payment Data Request: ", paymentDataRequest)
 
   const paymentsClient = getGooglePaymentsClient();
-
-  /*paymentsClient.loadPaymentData(paymentDataRequest);*/
-
   paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData){
-  }).catch(function(err){  
-    /*Log error: { statusCode: CANCELED || DEVELOPER_ERROR }*/
-    console.error("***** ERROR - PAYMENT BUTTON CLICKED: ",err);
+  
+  }).catch(function(err){
+          
+    // Log error: { statusCode: CANCELED || DEVELOPER_ERROR }
+    console.error("ERROR - PAYMENT BUTTON CLICKED: ",err);
+    /*sendResponse(err,'btn-clicked') TESTIIINGGGGGGGGGGGGGGGGGGGGGGGGGGGGG*/
   });
- 
 
 }
 
@@ -313,82 +310,21 @@ function processPayment(paymentData) {
       // @todo pass payment token to your gateway to process payment
       paymentToken = paymentData.paymentMethodData.tokenizationData.token;
 
-      console.warn("***** Recibido Payment Token:")
-      console.warn(paymentToken)
-      decryptMsj(paymentToken)
+      //console.warn("*** Process Payment")
+      //console.log(paymentData);
       
-      resolve({}); 
-      
-    }, 3000);
+      //console.log('Simulacro de envio de token #' + paymentToken + '# al procesador de pagos');
+
+			if (attempts++ % 2 == 0) {
+	      reject(new Error('Every other attempt fails, next one should succeed'));      
+      } else {
+	      resolve({});      
+      }
+    }, 500);
   });
 }
-
-/**
-* For environment tests, replace INSTANCE_PRODUCTION with INSTANCE_TEST 
-* and [YOUR MERCHANT ID] with 12345678901234567890.
-*
-*/
-function decryptMsj(paymentToken){
-
-  var myObj = JSON.parse(paymentToken);
-  var myObj2 = JSON.parse(myObj.signedMessage)
-  var encryptedMessage = myObj2.encryptedMessage
-
-  // New
-  var privateKey1 = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgWV4oK8c / MZkCLk4qSCNjW0Zm6H0CBCtSYxkXkC9FBHehRANCAAQPldOnhO2 / oXjdJD1dwlFPiNs6fcdoRgFu3 / Z0iKj24SjTGyLRGAtYWLGXBZcDdPj3T2bJRHRVhE8Bc2AjkT7n"
-
-  // Old
-  var privateKey2 = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgWV4oK8c / MZkCLk4qSCNjW0Zm6H0CBCtSYxkXkC9FBHehRANCAAQPldOnhO2 / oXjdJD1dwlFPiNs6fcdoRgFu3 / Z0iKj24SjTGyLRGAtYWLGXBZcDdPj3T2bJRHRVhE8Bc2AjkT7n"
-
-  console.warn(encryptedMessage)
-  /*
-  String decryptedMessage = new PaymentMethodTokenRecipient.Builder()
-  .fetchSenderVerifyingKeysWith(GooglePaymentsPublicKeysManager.INSTANCE_TEST)
-  .recipientId("merchant:0123456789")
-  .protocolVersion("ECv2")
-  .addRecipientPrivateKey(privateKey1)
-  .build()
-  .unseal(encryptedMessage);
-  */
-  
-  //console.warn(decryptedMessage)
-
-
-}
-
-/**
-  Send Response to process Order
-*/
-    
-function sendResponse(response,type){
-
-    var url = "{{route('icommercegooglepay.api.googlepay.response')}}";
-    var orderId = {{$order->id}}
-
-    $.ajax({
-        url:url,
-        type:"POST",
-        data:{response:response,orderId,type},
-        dataType:"JSON",
-        beforeSend: function(){
-            //console.warn("SEND RESPONSE: BEFORE")
-        },
-        success: function(result){
-
-          if(result.data.redirectRoute){
-            console.warn(result.data.redirectRoute)
-            //window.location = result.data.redirectRoute
-          }
-
-        },
-        error: function(result)
-        {
-          console.log('ERROR - SEND RESPONSE:', result);
-        }
-
-    });
-}
  
+
 </script>   
 
 <script async
