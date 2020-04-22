@@ -1,7 +1,11 @@
-# asgardcms-icommercegooglepay
+# AsgardCMS (Laravel) - Module
+## Payment Method - GooglePay
 
+#### Requirements
 
-### Data Configuration (TEST)
+- Icommerce Module
+
+#### Data Configuration (TEST)
 
 - merchant Id: 	
 	0123456789
@@ -15,12 +19,12 @@
 - Private Key:
 	MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgWV4oK8c / MZkCLk4qSCNjW0Zm6H0CBCtSYxkXkC9FBHehRANCAAQPldOnhO2 / oXjdJD1dwlFPiNs6fcdoRgFu3 / Z0iKj24SjTGyLRGAtYWLGXBZcDdPj3T2bJRHRVhE8Bc2AjkT7n
 
-### Data Configuration (PRODUCTION)
+#### Data Configuration (PRODUCTION)
 
 - Keys:
 	https://developers.google.com/pay/api/web/guides/resources/payment-data-cryptography#public-key-format
 
 
-### Gateway
+#### Gateway
 
 - Direct by default
